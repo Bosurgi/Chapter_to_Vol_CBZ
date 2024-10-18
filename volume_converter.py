@@ -44,32 +44,38 @@ def convert_to_cbz(dir, destination):
         os.rename(zip_file_path, cbz_file_path)
 
 
-
 try:
     try:
-        volume = int(input("Insert Volume Number: "))
+        volumes = int(input("How many Volumes are there <Integer>: ").strip())
     except ValueError:
         print("Insert a valid integer")
 
-    chapterRange = input("Which Chapters they belong to: ").strip()
-    ranges = [x.strip() for x in chapterRange.split('-')]
+    current_volume = 1
 
-    try:
-        ranges = [int(x) for x in ranges]
-        if len(ranges) != 2 or not ranges[1] >= ranges[0]:
-            raise ValueError
+    while current_volume <= volumes:
+        chapterRange = input(f"Which Chapters belong to Volume {current_volume}: ").strip()
+        ranges = [x.strip() for x in chapterRange.split('-')]
 
-    except ValueError:
-        print("Use an appropriate format <Number1-Number2> inclusive and Number1 < Number2")
+        try:
+            ranges = [int(x) for x in ranges]
+            if len(ranges) != 2 or not ranges[1] >= ranges[0]:
+                raise ValueError
 
-    current_dir = os.getcwd()
-    destination_dir = os.path.join(current_dir, f'Vol.{volume}')
+        except ValueError:
+            print("Use an appropriate format <Number1-Number2> inclusive and Number1 < Number2")
+            continue
 
-    if not os.path.exists(destination_dir):
-        os.makedirs(destination_dir)
+        current_dir = os.getcwd()
+        destination_dir = os.path.join(current_dir, f'Vol.{current_volume}')
 
-    copy_rename_files(ranges, destination_dir)
-    convert_to_cbz(destination_dir, current_dir)
+        if not os.path.exists(destination_dir):
+            os.makedirs(destination_dir)
+
+        copy_rename_files(ranges, destination_dir)
+        convert_to_cbz(destination_dir, current_dir)
+        current_volume += 1
+
+    print("Conversion Complete")
 
 except ValueError as e:
     print("Error: ", e)
